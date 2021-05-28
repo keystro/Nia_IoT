@@ -100,6 +100,22 @@ class NewdeviceForm(FlaskForm):
 #app routes
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id is not None:
+        return User.query.get(user_id)
+    return None
+
+@login_manager.unauthorized_handler 
+def unauthorized():
+    flash('Login Required to view this page')
+    return redirect(url_for('login'))
+
+@app.route('/')
+@app.route('/index')
+def index():
+    return render_template('index.html')
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if current_user.is_authenticated:
@@ -133,15 +149,14 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/account/<username>')
-@login_required
-def account(username):
+@app.route('/account')
+def account():
     return render_template('account.html')
 
-@app.route('/')
-@app.route('/index')
-def index():
-    return render_template('index.html')
+@app.route('/mydevices')
+def mydevices():
+    return render_template('devices.html')
+
 
 #appilcation inputs
 

@@ -3,6 +3,7 @@
 
 {% block title %} Nia IoT {% endblock title %}
 
+
 {% block navbar %}
     <nav class="navbar navbar-dark bg-dark" style="background-image: linear-gradient(15deg, #ffc04a 10%, #ff6343 90%);">
         <div class="container">
@@ -32,8 +33,14 @@
 {% endblock navbar %}
 
 {% block content %}
+    <div class="sidebar">
+        <div>
+            <img alt="Profile Pic">
+            <h1>Header</h1>
+        </div>
+        <li>Mys devices</li>
+    </div>
     <div class="container">
-
         {% block main_content %} {% endblock main_content %}
     </div>
 {% endblock content %}
