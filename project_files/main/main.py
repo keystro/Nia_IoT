@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #!/usr/flask/python3
 
-from flask import Flask, render_template, url_for, flash, redirect, request
+from flask import Flask, render_template, url_for, flash, redirect, request, jsonify
 from flask_bootstrap import Bootstrap
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required 
@@ -11,7 +11,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, IPAddress
 from datetime import datetime
-import secrets, os
+import secrets, os, random
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -32,7 +32,7 @@ login_manager.login_message_category = 'info'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return User.query.get(user_id)
 
 class User(db.Model, UserMixin):
     __tablename__='user'
@@ -41,8 +41,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(128), unique = True, nullable = False)
     is_active = db.Column(db.Boolean, unique=False, default=False , nullable = False)
     password = db.Column(db.String(128), unique= False, nullable = False)
-    devices = db.relationship('Device', backref = 'owner')
-
+    #devices = db.relationship('Device', backref = 'owner')
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
@@ -55,10 +54,10 @@ class Device(db.Model):
     decive_IP = db.Column(IPAddressType, unique=True, nullable = True)
     api_token = db.Column(db.String(256), unique=True, nullable=True)
     telemetrys = db.relationship('Telemetry', backref='device_data')
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return f"Device('{self.unique_tag}', '{self.decive_IP}')"
+        return f"Device('{self.unique_tag}', '{self.decive_IP}','{self.api_token}')"
 
 
 class Telemetry(db.Model):
@@ -145,17 +144,51 @@ def register():
     return render_template('register.html', form=form)
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
 @app.route('/account')
+@login_required
 def account():
-    return render_template('account.html')
+    if current_user.is_authenticated:
+        return render_template('account.html', username=username)
+    else:
+        flash('User Authentication required')
+        return redirect(url_for('login'))
 
-@app.route('/mydevices')
-def mydevices():
-    return render_template('devices.html')
+@app.route('/mydevices/<usrid>')
+@login_required
+def mydevices(usrid):
+    if current_user.is_authenticated:
+        usrid = current_user.user_id
+        return render_template('devices.html')
+    else:
+        flash('User Authentication required')
+        return redirect(url_for('login'))
+
+def generate_api_token():
+    pass
+
+@app.route("/integrate", methods = ['POST','GET'])
+def integrate():
+    aphrases=['Alpha','Bravo','Charlie','Delta','Echo','Foxtrot','Golf','Hotel','India','Juliet','Kilo','Lima','Mike','November','Oscar','Papa','Quebec','Romeo','Sierra','Tango','Uniform','Victor','Whiskey','X-ray','Yankee','Zulu']
+    alist=[]
+    data = request.get_json()
+    ipadr = data['ipadr']
+    token = secrets.token_hex(24)
+    alist.append(token)
+    tag = random.choice(aphrases)+secrets.token_hex(4)
+    alist.append(tag)
+    sep = '/'
+    key = sep.join(alist)
+    main = Device(decive_IP= ipadr,api_token=token, unique_tag=tag)
+    db.session.add(main)
+    db.session.commit()
+    generate_api_token()
+    return jsonify({'ipadr': ipadr, 'key':key})
+    
 
 
 #appilcation inputs
@@ -164,4 +197,7 @@ def mydevices():
 #runnig server command
 
 if __name__ == '__main__':
-    app.run(debug=True, port = 8090)
+    app.run(debug=True, host='192.168.1.104',  port = 8090)
+
+
+    ['Alpha']
