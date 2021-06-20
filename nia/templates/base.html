@@ -21,17 +21,17 @@
         <nav class="navbar navbar-dark bg-dark" style="background-image: linear-gradient(15deg, #ffc04a 10%, #ff6343 90%);">
             <div class="container">
                 <div class="nav navbar-nav navbar-left" >
-                    <a class="navbar-brand" style="color: #3A3A3A; font-size: 24px; font-weight: bold;" href="{{ url_for('index')}}">Nia IoT</a>
-                    <a href="{{ url_for('index')}}" style="color: #3A3A3A;">Home</a>
+                    <a class="navbar-brand" style="color: #3A3A3A; font-size: 24px; font-weight: bold;" href="{{ url_for('views.index')}}">Nia IoT</a>
+                    <a href="{{ url_for('views.index')}}" style="color: #3A3A3A;">Home</a>
                     <a href="#" style="color: #3A3A3A;">Telemetry</a>
                 </div>
                 <div class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('account')}}" style="color: #3A3A3A;">Account</a>
-                    <a href="{{ url_for('logout')}}" style="color: #3A3A3A;">Sign out</a>
+                    <a href="{{ url_for('views.account')}}" style="color: #3A3A3A;">Account</a>
+                    <a href="{{ url_for('views.logout')}}" style="color: #3A3A3A;">Sign out</a>
                     {% else %}
-                    <a href="{{ url_for('login')}}" style="color: #3A3A3A;">Sign In</a>
-                    <a href="{{ url_for('register')}}" style="color: #3A3A3A;">Sign Up</a>
+                    <a href="{{ url_for('views.login')}}" style="color: #3A3A3A;">Sign In</a>
+                    <a href="{{ url_for('views.register')}}" style="color: #3A3A3A;">Sign Up</a>
                     {% endif %}
                 </div>
             </div>

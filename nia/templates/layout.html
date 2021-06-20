@@ -14,18 +14,18 @@
                     <span class="icon-bar" style="background-color: #3A3A3A;" ></span>
                     <span class="icon-bar" style="background-color: #3A3A3A;" ></span>
                 </button>
-                <a class="navbar-brand" style="color: #3A3A3A; font-size: 18px; font-weight: bold;" href="{{ url_for('index')}}">Nia IoT</a>
+                <a class="navbar-brand" style="color: #3A3A3A; font-size: 18px; font-weight: bold;" href="{{ url_for('views.index')}}">Nia IoT</a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav" >
-                    <li><a href="{{ url_for('index')}}" style="color: #3A3A3A;">Home</a></li>
+                    <li><a href="{{ url_for('views.index')}}" style="color: #3A3A3A;">Home</a></li>
                     <li><a href="#" style="color: #3A3A3A;">Telemetry</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{{ url_for('account')}}" style="color: #3A3A3A;">Account</a></li>
-                    <li><a href="{{ url_for('logout')}}" style="color: #3A3A3A;">Sign out</a></li>
-                    <li><a href="{{ url_for('login')}}" style="color: #3A3A3A;">Sign In</a></li>
-                    <li><a href="{{ url_for('register')}}" style="color: #3A3A3A;">Sign Up</a></li>
+                    <li><a href="{{ url_for('views.account')}}" style="color: #3A3A3A;">Account</a></li>
+                    <li><a href="{{ url_for('views.logout')}}" style="color: #3A3A3A;">Sign out</a></li>
+                    <li><a href="{{ url_for('views.login')}}" style="color: #3A3A3A;">Sign In</a></li>
+                    <li><a href="{{ url_for('views.register')}}" style="color: #3A3A3A;">Sign Up</a></li>
                 </ul>
             </div>
         </div>
