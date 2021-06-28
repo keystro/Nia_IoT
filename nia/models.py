@@ -18,7 +18,8 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
-
+    def is_active(self):
+        return True
 
 class Device(db.Model):
     __tablename__='device'
