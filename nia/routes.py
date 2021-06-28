@@ -4,30 +4,39 @@ from nia.forms import  SignupForm, LoginForm, NewdeviceForm
 from flask_login import login_user, current_user, logout_user, login_required
 from nia.models import User, Device, Telemetry, Methods
 import secrets, random
-
+from werkzeug.urls import url_parse
 
 views = Blueprint('views',__name__)
 
 @views.route('/')
-@views.route('/index')
+@views.route('/index',methods=["GET"])
 def index():
     return render_template('index.html')
 
-@views.route('/login', methods=['POST', 'GET'])
+@views.route('/login',methods=['GET','POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('views.index'))
-    form = LoginForm()
+    form=LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.password == form.password.data:
-            login_user(user, remember=form.remember.data)
-            session['email'] = request.form['email']
-            flash('Login Successful','success')
-            return redirect(url_for('views.index'))
-        else:
-            flash('Login Unsuccessful. Please check your login details', 'danger')
+        user=User.query.filter_by(email=form.email.data).first()
+        password=form.password.data
+        if user is None  or password!=user.password:
+            flash('wrong email/password','danger')
+            return redirect(url_for('views.login'))
+        login_user(user,remember=form.remember.data)
+        next_page=request.args.get('next')
+        if next_page:
+            #page requiring authentication to gain access,once user logs in, 
+            #they are redirected back to that page
+            next_page=next_page.split('/')[-2:]
+            next_page=next_page[0]+"."+next_page[1]
+        if not next_page or url_parse(next_page).netloc!='':
+            next_page='views.index'
+        flash(f'Login successful','success')
+        return redirect(url_for(next_page))
     return render_template('login.html', form=form)
+
 
 @views.route('/register', methods=['POST', 'GET'])
 def register():
@@ -39,21 +48,22 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('User account has been created successfully','success')
-        return redirect(url_for('views.login'))
+        usr=User.query.filter_by(email=form.email.data).first()
+        login_user(usr)
+        return redirect(url_for('views.index'))
     return render_template('register.html', form=form)
 
 @views.route('/logout')
 @login_required
 def logout():
     logout_user()
-    session.pop('email', None)
     return redirect(url_for('views.index'))
 
 @views.route('/account')
 @login_required
 def account():
     if current_user.is_authenticated:
-        return render_template('account.html', username=username)
+        return render_template('index.html', username=current_user.username)
     else:
         flash('User Authentication required','danger')
         return redirect(url_for('views.login'))
